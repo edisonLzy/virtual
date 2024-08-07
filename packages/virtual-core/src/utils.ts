@@ -4,6 +4,7 @@ export type PartialKeys<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 export function memo<TDeps extends ReadonlyArray<any>, TResult>(
   getDeps: () => [...TDeps],
+  // ? 这里如果不使用 NoInfer 则 fn 的类型是什么 ？ 
   fn: (...args: NoInfer<[...TDeps]>) => TResult,
   opts: {
     key: false | string
@@ -24,7 +25,7 @@ export function memo<TDeps extends ReadonlyArray<any>, TResult>(
     const depsChanged =
       newDeps.length !== deps.length ||
       newDeps.some((dep: any, index: number) => deps[index] !== dep)
-
+    // 
     if (!depsChanged) {
       return result!
     }

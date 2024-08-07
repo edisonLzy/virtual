@@ -18,7 +18,7 @@ function App() {
 
       <h3>Rows</h3>
       <RowVirtualizerFixed />
-      <br />
+      {/* <br />
       <br />
       <h3>Columns</h3>
       <ColumnVirtualizerFixed />
@@ -34,7 +34,7 @@ function App() {
           development mode. Rendering performance will be slightly degraded
           until this application is build for production.
         </p>
-      ) : null}
+      ) : null} */}
     </div>
   )
 }
@@ -44,9 +44,11 @@ function RowVirtualizerFixed() {
 
   const rowVirtualizer = useVirtualizer({
     count: 10000,
+    // outerSize
     getScrollElement: () => parentRef.current,
     estimateSize: () => 35,
     overscan: 5,
+    debug: true,
   })
 
   return (

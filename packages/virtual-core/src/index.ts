@@ -439,7 +439,7 @@ export class Virtualizer<
       this.cleanup()
     }
   }
-
+  // 🔥: entry
   _willUpdate = () => {
     const scrollElement = this.options.enabled
       ? this.options.getScrollElement()
@@ -458,6 +458,7 @@ export class Virtualizer<
       if (this.scrollElement && 'ownerDocument' in this.scrollElement) {
         this.targetWindow = this.scrollElement.ownerDocument.defaultView
       } else {
+        // ? 什么情况 element上回存在 window数学？ 
         this.targetWindow = this.scrollElement?.window ?? null
       }
 
@@ -467,6 +468,7 @@ export class Virtualizer<
       })
 
       this.unsubs.push(
+        // 监听 this.scrollElement 尺寸的变化
         this.options.observeElementRect(this, (rect) => {
           this.scrollRect = rect
           this.notify(false, false)
@@ -474,6 +476,7 @@ export class Virtualizer<
       )
 
       this.unsubs.push(
+        // 监听 元素滚动的情况
         this.options.observeElementOffset(this, (offset, isScrolling) => {
           this.scrollAdjustments = 0
           this.scrollDirection = isScrolling
@@ -613,6 +616,7 @@ export class Virtualizer<
         let measureElement = this.measurementsCache[i]?.measureElement
 
         if (!measureElement) {
+          // 支持动态Item
           measureElement = (node: TItemElement | null | undefined) => {
             const key = getItemKey(i)
             const prevNode = this.elementsCache.get(key)
@@ -644,6 +648,7 @@ export class Virtualizer<
 
         const key = getItemKey(i)
 
+        // 前一项的结束位置
         const furthestMeasurement =
           this.options.lanes === 1
             ? measurements[i - 1]
@@ -771,6 +776,14 @@ export class Virtualizer<
     this.resizeItem(i, this.options.measureElement(node, entry, this))
   }
 
+  /**
+   * 1. 计算新的大小与当前大小的差值 delta, 检查是否需要调整滚动位置，如果需要则进行调整.
+   * 2. 更新 itemSizeCache 
+   * 3. notify 更新
+   * @param index 
+   * @param size 
+   * @returns 
+   */
   resizeItem = (index: number, size: number) => {
     const item = this.getMeasurements()[index]
     if (!item) {
@@ -788,7 +801,7 @@ export class Virtualizer<
         if (process.env.NODE_ENV !== 'production' && this.options.debug) {
           console.info('correction', delta)
         }
-
+        // 动态 Item 的时候, 调整滚动位置
         this._scrollToOffset(this.getScrollOffset(), {
           adjustments: (this.scrollAdjustments += delta),
           behavior: undefined,
@@ -796,6 +809,7 @@ export class Virtualizer<
       }
 
       this.pendingMeasuredCacheIndexes.push(item.index)
+      // 更新 itemSizeCache, 从而导致 getMeasurements 变化
       this.itemSizeCache = new Map(this.itemSizeCache.set(item.key, size))
 
       this.notify(true, false)
@@ -1073,6 +1087,7 @@ function calculateRange<TItemElement extends Element>({
   scrollOffset: number
 }) {
   const count = measurements.length - 1
+  // The starting pixel offset for the item
   const getOffset = (index: number) => measurements[index]!.start
 
   const startIndex = findNearestBinarySearch(0, count, getOffset, scrollOffset)
@@ -1080,6 +1095,7 @@ function calculateRange<TItemElement extends Element>({
 
   while (
     endIndex < count &&
+    // 找到第一个 end 大于 scrollOffset + outerSize 的元素
     measurements[endIndex]!.end < scrollOffset + outerSize
   ) {
     endIndex++

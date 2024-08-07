@@ -24,6 +24,7 @@ function RowVirtualizerDynamic() {
     getScrollElement: () => parentRef.current,
     estimateSize: () => 45,
     enabled,
+    debug: true
   })
 
   const items = virtualizer.getVirtualItems()
@@ -69,6 +70,7 @@ function RowVirtualizerDynamic() {
           height: 400,
           width: 400,
           overflowY: 'auto',
+          // https://developer.mozilla.org/en-US/docs/Web/CSS/contain/
           contain: 'strict',
         }}
       >
@@ -99,6 +101,7 @@ function RowVirtualizerDynamic() {
               >
                 <div style={{ padding: '10px 0' }}>
                   <div>Row {virtualRow.index}</div>
+                  <input placeholder='typing....'/>
                   <div>{sentences[virtualRow.index]}</div>
                 </div>
               </div>
